@@ -1,3 +1,4 @@
 # HIVfilter
 To filter the sequences obtained from Harvard DNA core
-"A line from widows" 
+
+This is a test edition of using github on Windows
