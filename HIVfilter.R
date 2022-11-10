@@ -143,13 +143,18 @@ filtered<-dplyr::filter(filtered,(qc04=="Passed" & Primer!="No") | qc04=="Keep")
 #qc 05
 #failed if duplicate in FA/FD and Inner
 library(tidyverse)
-for (i in filtered[which(duplicated(filtered$sample)),]$sample) {
-  target<-subset(filtered,sample==i)
-  temp<-append(temp,target[which(target$len!=max(target$len))[1],]$contig)
+if (length(filtered[which(duplicated(filtered$sample)),]$sample)!=0) {
+  for (i in filtered[which(duplicated(filtered$sample)),]$sample) {
+    target<-subset(filtered,sample==i)
+    temp<-append(temp,target[which(target$len!=max(target$len))[1],]$contig)
+  }
+  filtered$qc05<-ifelse(filtered$contig %in% temp,"Shorter Duplication","Passed")
+  
+} else {
+  filtered$qc05<-"No duplication"
 }
-filtered$qc05<-ifelse(filtered$contig %in% temp,"Shorter Duplication","Passed")
 master<-left_join(master,select(filtered,c("contig","qc05")),by="contig")
-filtered<-dplyr::filter(filtered,(qc05=="Passed"))
+filtered<-dplyr::filter(filtered,(qc05=="Passed"| qc05=="No duplication"))
 
 #Export Sequences
 Correctseq<-DNAStringSet()
